@@ -1,0 +1,34 @@
+{
+  "name": "subtender",
+  "version": "0.0.1",
+  "description": "Javran's utility functions",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Javran/subtender.git"
+  },
+  "keywords": [
+    "utils"
+  ],
+  "author": "Javran Cheng <Javran.C@gmail.com> (https://github.com/Javran)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Javran/subtender/issues"
+  },
+  "homepage": "https://github.com/Javran/subtender#readme",
+  "devDependencies": {
+    "babel-eslint": "^7.2.3",
+    "eslint": "^3.19.0",
+    "eslint-config-airbnb": "^15.0.2",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-jsx-a11y": "^5.1.1",
+    "eslint-plugin-react": "^7.1.0"
+  },
+  "dependencies": {
+    "lodash": "^4.17.4",
+    "shallowequal": "^1.0.2"
+  }
+}
