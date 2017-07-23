@@ -1,6 +1,6 @@
 {
   "name": "subtender",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Javran's utility functions",
   "main": "index.js",
   "private": true,
@@ -39,6 +39,5 @@
     "mocha": "^3.4.2",
     "lodash": "^4.17.4"
   },
-  "dependencies": {
-  }
+  "dependencies": {}
 }
