@@ -58,9 +58,12 @@ const modifyObject = (propName, f, removeUndefined = false) => {
       return obj
 
     if (typeof newVal === 'undefined' && removeUndefined) {
-      const newObj = {...obj}
-      delete newObj[propName]
-      return newObj
+      if (isValAssigned) {
+        const {[propName]: _ignored, ...rest} = obj
+        return rest
+      } else {
+        return obj
+      }
     } else {
       return ({
         ...obj,
