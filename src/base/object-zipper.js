@@ -41,15 +41,8 @@ const unloadPair = pair => obj => {
   if ('val' in pair) {
     // val is assigned, which then always
     // overwrites whatever in the object
-    // if they are different
-    if (pair.val !== obj[key]) {
-      return {
-        ...obj,
-        [key]: pair.val,
-      }
-    } else {
-      return obj
-    }
+    // using modifyObject to avoid unnecessary overwrites
+    return modifyObject(key,() => pair.val)(obj)
   } else {
     // val is not assigned
     if (key in obj) {
@@ -78,6 +71,7 @@ const toObject = ozp => {
 // make sure we are focusing on a key
 const focusKey = key => ozp => {
   const {whole, focus} = ozp
+  // no need of changing focus if it's already the focus
   if (focus !== null && key === focus.key)
     return ozp
   const whole1 =
@@ -85,6 +79,8 @@ const focusKey = key => ozp => {
       whole :
       unloadPair(focus)(whole)
 
+  // not using modifyObject here
+  // at this point the focus must be changed anyways.
   return {
     ...ozp,
     whole: whole1,
@@ -95,9 +91,10 @@ const focusKey = key => ozp => {
 const modifyVal = (modifier, removeUndefined = false) => ozp => {
   const {focus} = ozp
   const {key,val} = focus
-  const newVal = modifier(val)
+  const isValAssigned = 'val' in focus
+  const newVal = modifier(val,key,isValAssigned)
   if (typeof newVal === 'undefined' && removeUndefined) {
-    if ('val' in focus) {
+    if (isValAssigned) {
       return {
         ...ozp,
         focus: {key},
