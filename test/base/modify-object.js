@@ -21,6 +21,46 @@ describe('modifyObject', () => {
     })
   })
 
+  spec('removeUndefined', () => {
+    const val = {
+      a: 1,
+      b: {c: 2, d: {e: 3, f: 4}},
+      4: {},
+    }
+
+    // removeUndefined = false
+    assert.deepEqual(
+      modifyObject(
+        'b', () => undefined,
+      )(val),
+      {a: 1, b: undefined, 4: {}})
+
+    // removeUndefined = true
+    assert.deepEqual(
+      modifyObject(
+        'b', () => undefined,
+        true,
+      )(val),
+      {a: 1, 4: {}})
+  })
+
+  spec('passing propName as 2nd arg', () => {
+    assert.deepEqual(
+      modifyObject('a', (v,k) => `${k}-${v}`)({a: 'b'}),
+      {a: 'a-b'})
+  })
+
+  spec('3rd arg for whether it iss assigned', () => {
+    const modifier = (_v, _k, isAssigned) =>
+      isAssigned ? _v : 'not assigned'
+    assert.deepEqual(
+      modifyObject('a', modifier)({a: undefined}),
+      {a: undefined})
+    assert.deepEqual(
+      modifyObject('a', modifier)({}),
+      {a: 'not assigned'})
+  })
+
   spec('tests', () => {
     {
       const val = {
@@ -28,22 +68,6 @@ describe('modifyObject', () => {
         b: {c: 2, d: {e: 3, f: 4}},
         4: {},
       }
-
-      // removeUndefined = false
-      assert.deepEqual(
-        modifyObject(
-          'b', () => undefined,
-        )(val),
-        {a: 1, b: undefined, 4: {}})
-
-      // removeUndefined = true
-      assert.deepEqual(
-        modifyObject(
-          'b', () => undefined,
-          true,
-        )(val),
-        {a: 1, 4: {}})
-
       assert.deepEqual(
         modifyObject(
           'b',
