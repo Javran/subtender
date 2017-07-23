@@ -5,7 +5,7 @@
   "main": "index.js",
   "private": true,
   "scripts": {
-    "transpile": "babel src --out-dir dist",
+    "transpile": "babel src --out-dir dist && cp package.json dist/package.json",
     "test": "mocha --compilers js:babel-core/register --recursive",
     "lint": "eslint 'src/**' 'test/**'",
     "clear-dist": "rm -rf dist/",
@@ -38,6 +38,9 @@
     "eslint-plugin-react": "^7.1.0",
     "mocha": "^3.4.2",
     "lodash": "^4.17.4"
+  },
+  "peerDependencies": {
+    "lodash": "^4"
   },
   "dependencies": {}
 }

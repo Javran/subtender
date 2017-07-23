@@ -1,5 +1,7 @@
 language: node_js
 node_js: node
+before_install:
+  - npm install lodash
 script: npm run check
 cache:
   directories:
