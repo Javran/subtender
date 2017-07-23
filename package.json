@@ -2,11 +2,13 @@
   "name": "subtender",
   "version": "0.0.1",
   "description": "Javran's utility functions",
-  "main": "./dist/index.js",
+  "main": "index.js",
+  "private": true,
   "scripts": {
     "transpile": "babel src --out-dir dist",
     "test": "mocha --compilers js:babel-core/register --recursive",
-    "prepublish": "npm run transpile"
+    "lint": "eslint 'src/**' test/**",
+    "clear-dist": "rm -rf dist/"
   },
   "repository": {
     "type": "git",
