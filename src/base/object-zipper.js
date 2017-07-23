@@ -22,6 +22,7 @@
 
    - focus.key, if present, is always normalized using key.toString()
  */
+import { modifyObject } from './common'
 
 const normKey = rawKey => rawKey.toString()
 
@@ -60,7 +61,6 @@ const unloadPair = pair => obj => {
     }
   }
 }
-
 
 const fromObject = obj => ({
   type: 'zipper',
@@ -126,6 +126,9 @@ class ObjectZipper {
     const ozp2 = modifyVal(modifier,removeUndefined)(ozp1)
     return ozp2
   }
+
+  static withZipped = funcOzp => obj =>
+    toObject(funcOzp(fromObject(obj)))
 }
 
 export { ObjectZipper }

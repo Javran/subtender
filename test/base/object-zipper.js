@@ -29,11 +29,12 @@ describe('ObjectZipper', () => {
           (obj,[k,m]) => modifyObject(k,m)(obj),
           {})
 
-        const v2 = ObjectZipper.toObject(
+        const v2 = ObjectZipper.withZipped(initOzp =>
           mods.reduce(
             (ozp,[k,m]) => ObjectZipper.modify(k,m)(ozp),
-            ObjectZipper.fromObject({}))
-        )
+            initOzp)
+        )({})
+
         assert.deepEqual(v1,v2)
       })
 
