@@ -23,4 +23,21 @@ const selectorTester =
     }
   }
 
-export { selectorTester }
+const injectReloaders = () => {
+  window.clearTaigeiCache = () => {
+    Object.keys(require.cache)
+      .filter(x => x.indexOf('subtender') !== -1)
+      .map(x => delete require.cache[x])
+  }
+
+  window.clearI18nCache = () => {
+    Object.keys(require.cache)
+      .filter(x => x.indexOf('i18n') !== -1)
+      .map(x => delete require.cache[x])
+  }
+}
+
+export {
+  selectorTester,
+  injectReloaders,
+}
