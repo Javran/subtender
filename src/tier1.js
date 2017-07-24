@@ -7,14 +7,13 @@
 
 
 /*
-   takes a list of mapDispatchToProp and construct a new one
-   that maps state to an Object whose properties are merged
-   from resulting Objects of these mapDispatchToProp functions.
+   despite being different, mergeMapDispatchToProps is identical to
+   that of mergeMapStateToProps. thus the sharing
  */
-const mergeMapDispatchToProps = (...mstps) => {
+const gMergeMapStateOrDispatchToProps = which => (...mstps) => {
   const violatedInd = mstps.findIndex(mstp => typeof mstp !== 'function')
   if (violatedInd !== -1) {
-    console.error(`mergeMapStateToProps requires all of its arguments to be functions`)
+    console.error(`${which} requires all of its arguments to be functions`)
     console.error(`violation happens at arg ind ${violatedInd}`)
     return _state => {}
   }
@@ -33,20 +32,25 @@ const mergeMapDispatchToProps = (...mstps) => {
   }
 }
 
+
 /*
-   takes a list of mapStateToProp and construct a new one
+   takes a list of mapDispatchToProps and construct a new one
+   that maps state to an Object whose properties are merged
+   from resulting Objects of these mapDispatchToProps functions.
+ */
+const mergeMapDispatchToProps =
+  gMergeMapStateOrDispatchToProps('mergeMapDispatchToProps')
+
+/*
+   takes a list of mapStateToProps and construct a new one
    that maps dispatch to an Object whose properties are merged
-   from resulting Objects of these mapStateToProp functions.
+   from resulting Objects of these mapStateToProps functions.
  */
 const mergeMapStateToProps =
-  /*
-     despite being different, their impl are identical
-     therefore the sharing
-   */
-  mergeMapDispatchToProps
+  gMergeMapStateOrDispatchToProps('mergeMapStateToProps')
 
 export * from './base'
 export {
-  mergeMapDispatchToProps,
   mergeMapStateToProps,
+  mergeMapDispatchToProps,
 }
