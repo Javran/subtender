@@ -2,7 +2,7 @@ import { assert, spec } from '../../common'
 
 import { SortedMap } from '../../../src/base/sorted-map'
 
-describe('SortedMap.guardModifier', () => {
+describe('SortedMap.guardModifier & SortedMap.withContext', () => {
   // for turning console.error calls into errors
   let consoleError
   before( () => {
@@ -22,8 +22,10 @@ describe('SortedMap.guardModifier', () => {
         compareKey: (x,y) => x-y,
       }
 
+      const SortedMapCls = SortedMap.withContext(smContext)
+
       {
-        const decoratedMod = SortedMap.guardModifier(smContext)(
+        const decoratedMod = SortedMapCls.guardModifier(
           (_v,_k) => undefined)
 
         assert.equal(
@@ -32,7 +34,7 @@ describe('SortedMap.guardModifier', () => {
       }
 
       {
-        const decoratedMod = SortedMap.guardModifier(smContext)(
+        const decoratedMod = SortedMapCls.guardModifier(
           (v,_k) => v+1)
 
         assert.throws(() =>

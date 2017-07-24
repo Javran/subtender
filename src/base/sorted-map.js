@@ -49,7 +49,7 @@ const defaultSmContext = {
      - if key < element.key, insertion point is right before the element
 
 */
-const locate = (smContext=defaultSmContext) => key => xs => {
+const locate = smContext => key => xs => {
   if (xs.length === 0)
     return null
 
@@ -186,27 +186,39 @@ const find = (smContext=defaultSmContext) => key => xs => {
   return cmpResult === 0 ? xs[ind] : undefined
 }
 
+/*
+   decorate a modifier to check for key-preserving property
+ */
+const guardModifier = (smContext=defaultSmContext) => {
+  const {elementToKey, compareKey} = smContext
+  return modifier => (val,key,isValAssigned) => {
+    const newVal = modifier(val,key,isValAssigned)
+    if (typeof newVal === 'undefined')
+      return newVal
+    if (compareKey(elementToKey(newVal), key) !== 0) {
+      console.error(`invariant violated: modifier have changed a key`)
+      return val
+    } else {
+      return newVal
+    }
+  }
+}
+
 class SortedMap {
+  static defaultContext = defaultSmContext
+
   static modify = modify
 
   static find = find
-  /*
-     decorate a modifier to check for key-preserving property
-   */
-  static guardModifier = smContext => {
-    const {elementToKey, compareKey} = smContext
-    return modifier => (val,key,isValAssigned) => {
-      const newVal = modifier(val,key,isValAssigned)
-      if (typeof newVal === 'undefined')
-        return newVal
-      if (compareKey(elementToKey(newVal), key) !== 0) {
-        console.error(`invariant violated: modifier have changed a key`)
-        return val
-      } else {
-        return newVal
-      }
+  static guardModifier = guardModifier
+
+  static withContext = smContext =>
+    class SortedMapWithContext {
+      static context = smContext
+      static modify = modify(smContext)
+      static find = find(smContext)
+      static guardModifier = guardModifier(smContext)
     }
-  }
 }
 
 export { SortedMap }
