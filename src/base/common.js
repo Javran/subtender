@@ -85,6 +85,23 @@ const scan = (xs, acc, zero) => {
   return ys
 }
 
+// copied from redux
+// originally https://github.com/reactjs/redux/blob/master/src/compose.js
+const compose = (...funcs) => {
+  if (funcs.length === 0) {
+    return arg => arg
+  }
+
+  if (funcs.length === 1) {
+    return funcs[0]
+  }
+
+  return funcs.reduce((a, b) => (...args) => a(b(...args)))
+}
+
+const precompose = prj => f => (...args) =>
+  f(...args.map(prj))
+
 export {
   enumFromTo,
   ignore,
@@ -95,4 +112,7 @@ export {
 
   singObj,
   scan,
+
+  compose,
+  precompose,
 }
