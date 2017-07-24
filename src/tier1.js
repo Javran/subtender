@@ -5,22 +5,13 @@
 
  */
 
-/*
-   takes a list of mapDispatchToProps and construct a new one
-   that maps dispatch to an Object whose properties are merged
-   from resulting Objects of these mapDispatchToProp functions.
- */
-const mergeMapDispatchToProps = (...mdtps) => dispatch =>
-  mdtps.reduce(
-    (props, curMdtp) => ({...props, ...curMdtp(dispatch)}),
-    {})
 
 /*
-   takes a list of mapStateToProps and construct a new one
+   takes a list of mapDispatchToProp and construct a new one
    that maps state to an Object whose properties are merged
-   from resulting Objects of these mapStateToProps functions.
+   from resulting Objects of these mapDispatchToProp functions.
  */
-const mergeMapStateToProps = (...mstps) => {
+const mergeMapDispatchToProps = (...mstps) => {
   const violatedInd = mstps.findIndex(mstp => typeof mstp !== 'function')
   if (violatedInd !== -1) {
     console.error(`mergeMapStateToProps requires all of its arguments to be functions`)
@@ -29,7 +20,6 @@ const mergeMapStateToProps = (...mstps) => {
   }
 
   const shouldRequestOwnProps = mstps.some(f => f.length !== 1)
-
   if (shouldRequestOwnProps) {
     return (state, ownProps) =>
       mstps.reduce(
@@ -42,6 +32,18 @@ const mergeMapStateToProps = (...mstps) => {
         {})
   }
 }
+
+/*
+   takes a list of mapStateToProp and construct a new one
+   that maps dispatch to an Object whose properties are merged
+   from resulting Objects of these mapStateToProp functions.
+ */
+const mergeMapStateToProps =
+  /*
+     despite being different, their impl are identical
+     therefore the sharing
+   */
+  mergeMapDispatchToProps
 
 export * from './base'
 export {
