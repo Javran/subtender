@@ -22,6 +22,19 @@
  */
 
 /*
+   the default SortedMap context:
+   assume that every element has a 'key' property,
+   which can be compared by '<' and '>'
+
+   it's assumed that `!(x < y) || !(x > y)` suggests x and y is equal.
+ */
+const defaultSmContext = {
+  elementToKey: v => v.key,
+  compareKey: (x,y) =>
+    (x > y) ? 1 : (x < y) ? -1 : 0,
+}
+
+/*
    returns `null` only when the given SortedMap (Array) is empty,
 
    otherwise:
@@ -36,7 +49,7 @@
      - if key < element.key, insertion point is right before the element
 
 */
-const locate = smContext => key => xs => {
+const locate = (smContext=defaultSmContext) => key => xs => {
   if (xs.length === 0)
     return null
 
@@ -119,7 +132,7 @@ const insertAt = (ind, val) => xs =>
      which checks for this key-preseving property if the return value is not 'undefined'.
 
  */
-const modify = smContext => (key, modifier) => xs => {
+const modify = (smContext=defaultSmContext) => (key, modifier) => xs => {
   const {elementToKey, compareKey} = smContext
 
   if (xs.length === 0) {
@@ -164,9 +177,19 @@ const modify = smContext => (key, modifier) => xs => {
   }
 }
 
+const find = (smContext=defaultSmContext) => key => xs => {
+  if (xs.length === 0)
+    return undefined
+  const ind = locate(smContext)(key)(xs)
+  const {elementToKey, compareKey} = smContext
+  const cmpResult = compareKey(elementToKey(xs[ind]), key)
+  return cmpResult === 0 ? xs[ind] : undefined
+}
+
 class SortedMap {
   static modify = modify
 
+  static find = find
   /*
      decorate a modifier to check for key-preserving property
    */
