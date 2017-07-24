@@ -21,8 +21,21 @@
 
  */
 
-// returns the index where 'key' is expected
-// returns null only when the given Array is empty
+/*
+   returns `null` only when the given SortedMap (Array) is empty,
+
+   otherwise:
+
+   - returns the index where 'key' is expected.
+   - it's guaranteed that in this case the return value is always in range
+   - if one wishes to insert a value, the insertion point could be before or
+     after the index returned by this function, one should compare key with
+     the element under index to tell:
+
+     - if key > element.key, insertion point is right after the element
+     - if key < element.key, insertion point is right before the element
+
+*/
 const locate = smContext => key => xs => {
   if (xs.length === 0)
     return null
@@ -70,6 +83,7 @@ const locate = smContext => key => xs => {
   return find(0,xs.length-1)
 }
 
+// TODO: this one can be lifted into common
 const insertAt = (ind, val) => xs =>
   [
     ...xs.slice(0,ind),
@@ -77,6 +91,34 @@ const insertAt = (ind, val) => xs =>
     ...xs.slice(ind,xs.length),
   ]
 
+/*
+   modify(<smContext>)(<key>,<modifier>)(<SortedMap>) => SortedMap
+
+   modifies the SortedMap as if we are using modifyObject on an Object.
+
+   - smContext: {elementToKey, compareKey} (see comment on top)
+
+   - modifier is called like: `modifier(<current val>, <key>, <isValAssigned>)`
+
+     - <current val> is the current element in Array
+       (`undefined` if it's a fresh place)
+     - <isValAssigned>: whether the value is assigned. originally this is to
+       keep API consistent with that of modifyObject, but since
+       we have the assumption that SortedMap can't have `undefined` members,
+       one could just test <current val> for getting the same info.
+
+   - it's very important that modifier must either return `undefined` or return
+     a value `val` which satisfies:
+
+     `compareKey(elementToKey(val), key) === 0`
+
+     otherwise SortedMap's properties will break.
+
+   - modify **does not** provide any checks to ensure the key is preserved,
+     but one can have their modifier decorated by SortedMap.guardModifier,
+     which checks for this key-preseving property if the return value is not 'undefined'.
+
+ */
 const modify = smContext => (key, modifier) => xs => {
   const {elementToKey, compareKey} = smContext
 
@@ -124,6 +166,24 @@ const modify = smContext => (key, modifier) => xs => {
 
 class SortedMap {
   static modify = modify
+
+  /*
+     decorate a modifier to check for key-preserving property
+   */
+  static guardModifier = smContext => {
+    const {elementToKey, compareKey} = smContext
+    return modifier => (val,key,isValAssigned) => {
+      const newVal = modifier(val,key,isValAssigned)
+      if (typeof newVal === 'undefined')
+        return newVal
+      if (compareKey(elementToKey(newVal), key) !== 0) {
+        console.error(`invariant violated: modifier have changed a key`)
+        return val
+      } else {
+        return newVal
+      }
+    }
+  }
 }
 
 export { SortedMap }

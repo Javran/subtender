@@ -1,10 +1,10 @@
 import _ from 'lodash'
-import { assert, spec } from '../common'
+import { assert, spec } from '../../common'
 
-import { enumFromTo, modifyObject } from '../../src/base'
-import { SortedMap } from '../../src/base/sorted-map'
+import { enumFromTo, modifyObject } from '../../../src/base'
+import { SortedMap } from '../../../src/base/sorted-map'
 
-describe('SortedMap', () => {
+describe('SortedMap.modify', () => {
   const genInt = (min,max) => () => _.random(min,max)
   const repeatGen = (count,gen) =>
     enumFromTo(1,count).map(gen)
