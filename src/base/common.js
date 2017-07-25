@@ -1,14 +1,13 @@
-/*
-   This module is meant to be a module that you can use without
-   any dependencies.
- */
-
 // enumFromTo(x,y) = [x,x+1,x+2...y]
-// only guarantee to work on increasing sequences
-const enumFromTo = (frm,to,succ=(x => x+1)) => {
+// override 'succ' and 'cond' for custom generating behavior
+const enumFromTo = (
+  frm,to,
+  succ = x => x + 1,
+  cond = x => x <= to
+) => {
   const arr = []
-  for (let i=frm; i<=to; i=succ(i))
-    arr.push( i )
+  for (let i=frm; cond(i); i=succ(i))
+    arr.push(i)
   return arr
 }
 

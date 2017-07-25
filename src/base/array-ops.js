@@ -1,6 +1,5 @@
 /*
    Array-related functions
-
  */
 
 // "modifyArray(index,f)(xs)" keeps "xs" intact and returns a new array
