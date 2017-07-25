@@ -7,17 +7,17 @@ import { insertAt } from '../../../src/base/array-ops'
 describe('insertAt', () =>
   spec('tests', () => {
     {
-      const xs = _.words('b c d')
+      const xs = 'b c d'.split(' ')
       const ys = [...xs]
       assert.deepEqual(
         insertAt(0,'a')(xs),
-        _.words('a b c d'))
+        'a b c d'.split(' '))
       // no mutation
       assert.deepEqual(xs,ys)
 
       assert.deepEqual(
         insertAt(1,'a')(['b','c','d']),
-        _.words('b a c d'))
+        'b a c d'.split(' '))
       // no mutation
       assert.deepEqual(xs,ys)
     }

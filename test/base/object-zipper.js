@@ -5,7 +5,7 @@ import { enumFromTo, modifyObject, ObjectZipper } from '../../src/base'
 
 describe('ObjectZipper', () => {
   const genKey = () => _.sample([
-    () => _.sample(_.words('a b c d e')),
+    () => _.sample('a b c d e'.split(' ')),
     () => _.random(1,5),
   ])()
 
