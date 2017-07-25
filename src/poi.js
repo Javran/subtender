@@ -52,52 +52,19 @@ const mkDebug = (tagName='subtender',startEnabled=false) => {
     dbgHandler.disable()
   }
 
-  /*
-     dbgHandler.log and dbgHandler.assert cannot be bound too early,
-     otherwise the enable() / disable() won't be respected.
+  dbgHandler.warn =
+    console.warn.bind(
+      console,
+      `%c${tagName}`,
+      'background: linear-gradient(30deg, cyan, white 3ex)')
 
-     we workaround by using class getters, which can be used without
-     explicit giving an argument list.
+  dbgHandler.error =
+    console.error.bind(
+      console,
+      `%c${tagName}`,
+      'background: linear-gradient(30deg, cyan, white 3ex)')
 
-     this way runtime dbgHandler 'enabled' flag will be respected,
-        and also we'll get correct source locations
-   */
-  const debug = new (class {
-    constructor(dbgHandlerArg) {
-      this.dbgHandler = dbgHandlerArg
-    }
-
-    get log() {
-      return this.dbgHandler.log
-    }
-
-    get assert() {
-      return this.dbgHandler.assert
-    }
-
-    enable() {
-      return this.dbgHandler.enable()
-    }
-
-    disable() {
-      return this.dbgHandler.disable()
-    }
-    // things that could go wrong should be easily spotted
-    // unconditionally
-    warn =
-      console.warn.bind(
-        console,
-        `%c${tagName}`,
-        'background: linear-gradient(30deg, cyan, white 3ex)')
-
-    error =
-      console.error.bind(
-        console,
-        `%c${tagName}`,
-        'background: linear-gradient(30deg, cyan, white 3ex)')
-  })(dbgHandler)
-
-  return debug
+  return dbgHandler
 }
 
 export {
