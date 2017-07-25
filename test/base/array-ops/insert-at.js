@@ -1,7 +1,8 @@
 import _ from 'lodash'
-import { assert, spec } from '../common'
+import { assert, spec } from '../../common'
 
-import { insertAt, enumFromTo } from '../../src/base/common'
+import { enumFromTo } from '../../../src/base/common'
+import { insertAt } from '../../../src/base/array-ops'
 
 describe('insertAt', () =>
   spec('tests', () => {

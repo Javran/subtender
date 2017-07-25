@@ -1,6 +1,6 @@
-import { assert, spec } from '../common'
+import { assert, spec } from '../../common'
 
-import { modifyArray } from '../../src/base'
+import { modifyArray } from '../../../src/base'
 
 describe('modifyArray', () => {
   // for turning console.error calls into errors

@@ -1,6 +1,6 @@
-import { assert, spec } from '../common'
+import { assert, spec } from '../../common'
 
-import { scan } from '../../src/base'
+import { scan } from '../../../src/base'
 
 describe('scan', () => {
   spec('tests', () => {

@@ -29,7 +29,7 @@
    it's assumed that `!(x < y) || !(x > y)` suggests x and y is equal.
  */
 
-import { insertAt } from './common'
+import { insertAt } from './array-ops'
 
 const defaultSmContext = {
   elementToKey: v => v.key,
