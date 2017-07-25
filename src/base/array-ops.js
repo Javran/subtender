@@ -43,9 +43,67 @@ const scan = (xs, acc, zero) => {
   return ys
 }
 
+/*
+
+   the functions in next section deals with things related to Array.prototype.sort
+
+   terms:
+
+   - comparator: a function that accepts two arguments and can be used as
+     the argument to Array.prototype.sort
+
+   - projector: a function that projects an Array element into a value
+     for the purpose of sorting
+
+ */
+
+/*
+
+   a comparator that works on any value that supports
+   `===`, `>` and `<`.
+
+   Note that it's assumed that `!(x === y) && !(x < y) && !(x > y)`
+   suggests equality.
+
+ */
+const generalComparator = (x,y) =>
+  (x === y) ? 0 :
+  (x < y) ? -1 :
+  (x > y) ? 1 :
+  0
+
+// composing multiple comparators into one by
+// trying comparators **from left to right**, and return first non-zero value.
+// if no comparator is provided or all comparator has return 0
+// the resulting comparator returns 0 as well.
+const chainComparators = (...cmps) => (x,y) => {
+  // using for loop so we have a convenient way of short-cutting
+  for (let i=0; i<cmps.length; ++i) {
+    const result = cmps[i](x,y)
+    if (result !== 0)
+      return result
+  }
+  return 0
+}
+
+const flipComparator = cmp => (x,y) => cmp(y,x)
+
+// create a comparator
+// assuming the given projector projects a comparable value
+const projectorToComparator = prj => (x,y) =>
+  // yes this is a precomposition, we could have used
+  // `precompose` function, but we know the arity of comparator
+  // is always 2, and don't realy need to use a general version
+  generalComparator(prj(x),prj(y))
+
 export {
   modifyArray,
   insertAt,
 
   scan,
+
+  generalComparator,
+  chainComparators,
+  flipComparator,
+  projectorToComparator,
 }

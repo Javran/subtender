@@ -24,17 +24,17 @@
 /*
    the default SortedMap context:
    assume that every element has a 'key' property,
-   which can be compared by '<' and '>'
 
-   it's assumed that `!(x < y) || !(x > y)` suggests x and y is equal.
+   basically generalComparator works on any value that supports
+   `===` and `<` and `>`, check its definition in ./array-ops.js for details.
+
  */
 
-import { insertAt } from './array-ops'
+import { insertAt, generalComparator } from './array-ops'
 
 const defaultSmContext = {
   elementToKey: v => v.key,
-  compareKey: (x,y) =>
-    (x > y) ? 1 : (x < y) ? -1 : 0,
+  compareKey: generalComparator,
 }
 
 /*
