@@ -42,6 +42,14 @@ const modifyArray = (index, f) => {
   }
 }
 
+// insert a value at `ind` of an Array (functionally)
+const insertAt = (ind, val) => xs =>
+  [
+    ...xs.slice(0,ind),
+    val,
+    ...xs.slice(ind,xs.length),
+  ]
+
 // modifyObject(propName,f)(xs)" is like "modifyArray" for Objects.
 // Additionally, if you set `removeUndefined` to true,
 // you'll get back an Object without that key if you have returned `undefined`
@@ -108,6 +116,8 @@ export {
   not,
 
   modifyArray,
+  insertAt,
+
   modifyObject,
 
   singObj,

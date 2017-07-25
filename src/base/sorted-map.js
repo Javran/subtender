@@ -28,6 +28,9 @@
 
    it's assumed that `!(x < y) || !(x > y)` suggests x and y is equal.
  */
+
+import { insertAt } from './common'
+
 const defaultSmContext = {
   elementToKey: v => v.key,
   compareKey: (x,y) =>
@@ -97,12 +100,6 @@ const locate = smContext => key => xs => {
 }
 
 // TODO: this one can be lifted into common
-const insertAt = (ind, val) => xs =>
-  [
-    ...xs.slice(0,ind),
-    val,
-    ...xs.slice(ind,xs.length),
-  ]
 
 /*
    modify(<smContext>)(<key>,<modifier>)(<SortedMap>) => SortedMap
