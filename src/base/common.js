@@ -69,6 +69,22 @@ const compose = (...funcs) => {
 const precompose = prj => f => (...args) =>
   f(...args.map(prj))
 
+/*
+   split a string by ' '. mostly for providing
+   a convenient way of writing constant Arrays,
+   so you can write `words('a b c')` instead of `['a','b','c']`.
+ */
+const words = xs => xs.split(' ')
+
+/*
+   I'm not going to deal with mismatching types or NaN,
+   which is an unreadable mess by itself. do the sanity check yourself.
+ */
+const clamp = (min=-Infinity, max=+Infinity) => v =>
+  (v <= max) ?
+    (v >= min ? v : min) :
+    max
+
 export {
   enumFromTo,
   ignore,
@@ -80,4 +96,7 @@ export {
 
   compose,
   precompose,
+
+  words,
+  clamp,
 }
