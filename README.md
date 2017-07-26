@@ -19,6 +19,9 @@ This package comes with multiple tiers of dependencies:
 
 - `subtender` is the same as `subtender/tier1`.
 
-- `subtender/poi` to import tools for `poi` development, has to be opted-in.
+- `subtender/kc` includes functions related to KanColle Game mechanisms, has to be opted-in.
+  Unlike `subtender/poi`, this module does not require any dependency.
+
+- `subtender/poi` to import tools for `poi` development, has to be opted-in. It also re-exports `subtender/kc`.
 
 Ignore peer dependency warnings accordingly.

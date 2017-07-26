@@ -67,6 +67,8 @@ const mkDebug = (tagName='subtender',startEnabled=false) => {
   return dbgHandler
 }
 
+export * from './kc'
+
 export {
   selectorTester,
   injectReloaders,
