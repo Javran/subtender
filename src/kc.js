@@ -31,6 +31,7 @@ const canEquipDLC = (stype, masterId) => {
         418, // Satsuki K2
         434, // Mutsuki K2
         435, // Kisaragi K2
+        548, // Fumizuki K2
         464, // Kasumi K2
         470, // Kasumi K2B
         199, // Ooshio K2
