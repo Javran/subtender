@@ -4,7 +4,6 @@
      'views/create-store',
    ] }]
  */
-import React from 'react'
 import { store } from 'views/create-store'
 
 // injects a function onto window that can laterly be used to test selectors
@@ -68,33 +67,8 @@ const mkDebug = (tagName='subtender',startEnabled=false) => {
   return dbgHandler
 }
 
-// eslint-disable-next-line react/prop-types
-const Placeholder = ({style}) => (
-  <div style={{
-    width: '100%',
-    height: '100%',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    ...style,
-  }}>
-    <img
-      style={{
-        maxWidth: 600,
-        width: '100%',
-        height: '100%',
-      }}
-      src="https://pbs.twimg.com/media/DFVDZkDW0AI49Sq.jpg"
-      alt="decolorized-taigei"
-    />
-  </div>
-)
-
-export * from './kc'
-
 export {
   selectorTester,
   injectReloaders,
   mkDebug,
-  Placeholder,
 }
