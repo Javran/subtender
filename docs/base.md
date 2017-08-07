@@ -19,6 +19,9 @@ there are very few guarding mechanism to prevent you from misuse.
 - [`chainComparators`](#chaincomparators)
 - [`flipComparator`](#flipcomparator)
 - [`projectorToComparator`](#projectortocomparator)
+- [`sortBy`](#sortby)
+- [`inplaceSortBy`](#inplacesortby)
+- [`unionSorted`](#unionsorted)
 
 ## Terms
 
@@ -138,3 +141,22 @@ with its two arguments flipped.
 
 `projectorToComparator(prj)` takes a projector and produces a comparator
 that uses the projected value and `generalComparator` to do the comparison.
+
+## `sortBy`
+
+`sortBy(cmp)(xs)` return the sorted version of `xs`.
+
+## `inplaceSortBy`
+
+`inplaceSortBy(cmp)(xs)` return the sorted version of `xs`.
+**As its name suggests, this function sorts an Array in-place**.
+In cases where there is no other users of the same Array,
+we might gain some performance by sorting the array in-place.
+
+A typical situation is that we are in middle of a function composition chain,
+and the value is through the chain so there is no way to access the intermediate value.
+
+## `unionSorted`
+
+`unionSorted(cmp)(xs,ys)` merges two sorted Array into one.
+All elements and their orderings are preserved. This function is left-biased.

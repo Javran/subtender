@@ -100,6 +100,7 @@ const sortBy = (cmp = generalComparator) => xs => [...xs].sort(cmp)
 const inplaceSortBy = (cmp = generalComparator) => xs => xs.sort(cmp)
 
 // union 2 sorted arrays
+// TODO use term 'merge', as `union` might suggest dedup.
 const unionSorted = (cmp = generalComparator) => (xs,ys) => {
   const zs = []
   let xInd = 0
