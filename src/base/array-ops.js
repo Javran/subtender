@@ -13,10 +13,10 @@ const modifyArray = (index, f) => {
   return xs => {
     if (index < 0 || index >= xs.length)
       return xs
-    const ys = [...xs]
-    const v = ys[index]
+    const v = xs[index]
     const newV = f(v)
     if (v !== newV) {
+      const ys = [...xs]
       ys[index] = newV
       return ys
     } else {
