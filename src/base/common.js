@@ -16,27 +16,11 @@ const enumFromTo = (
 // it serves as an explicit annotation to say that they actually aren't
 const ignore = () => undefined
 
-/**
-
-   The identity function
-
-   @param {*} x
-   @returns {*} the input
-
- */
 const id = x => x
 
-/**
-
-   Negation
-
-   @param {*} x
-   @returns {bool} negation of `x`, coerced to `bool`.
-
- */
 const not = x => !x
 
-/**
+/*
 
    `modifyObject(propName,f,[removeUndefined])(obj)` returns an Object which is the same as
    `obj`, but with its `obj[propName]` replaced by applying `f` on the original value.
@@ -59,14 +43,31 @@ const not = x => !x
    and the modification ends up also being `undefined`, the input Object is returned
    ignoring `removeUndefined`.
 
-   @param {*} propName
-   @param {function} f
-   @param {bool} removeUndefined
-   @returns {function}
+   Make use of default parameters and chain `modifyObject` allows modifying
+   deeper Objects:
 
-   @example
-   modifyObject('x',modifyObject('y',(y=1) => y+2))({x: {}})
-   // => {x: {y: 3}}
+     modifyObject(
+       'x',
+       modifyObject(
+         'y',(y=1) => y+2
+       )
+     )({x: {}})
+     // => {x: {y: 3}}
+
+   Use function composition to achieve more complicated modifications:
+
+     modifyObject(
+       'x',
+       _.flow(
+         modifyObject(
+           'y', (y=1) => y+2,
+         ),
+         modifyObject(
+           'z', z => z*5
+         )
+       )
+     )({x: {z: 2}})
+     // => {x: {z: 10, y: 3}}
 
  */
 const modifyObject = (propName, f, removeUndefined = false) => {
