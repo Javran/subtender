@@ -16,12 +16,59 @@ const enumFromTo = (
 // it serves as an explicit annotation to say that they actually aren't
 const ignore = () => undefined
 
+/**
+
+   The identity function
+
+   @param {*} x
+   @returns {*} the input
+
+ */
+const id = x => x
+
+/**
+
+   Negation
+
+   @param {*} x
+   @returns {bool} negation of `x`, coerced to `bool`.
+
+ */
 const not = x => !x
 
-// modifyObject(propName,f)(xs)" is like "modifyArray" for Objects.
-// Additionally, if you set `removeUndefined` to true,
-// you'll get back an Object without that key if you have returned `undefined`
-// in your modifier.
+/**
+
+   `modifyObject(propName,f,[removeUndefined])(obj)` returns an Object which is the same as
+   `obj`, but with its `obj[propName]` replaced by applying `f` on the original value.
+
+   The modifier `f` receives 3 arguments: `(val, propName, isValAssigned)`:
+
+     - `val` is the value of `obj[propName]`
+     - `isValAssigned` is `false` only when `propName` is not assigned for `obj`,
+       this is to tell the difference between `undefined` being assigned to `obj[propName]`
+       and `obj[propName]` is not assigned.
+
+   When `removeUndefined` is set, and the modifier ends up returning `undefined`,
+   the property will not be assigned for the returning Object.
+
+   If the resulting value of the modification is strictly equal (`===`)
+   to the original one, the input Object will be returned.
+
+   Note that `modifyObject` always prioritize returning the same Object bypassing
+   `removeUndefined` flag. This means that when `obj[propName]` evaluates to `undefined`
+   and the modification ends up also being `undefined`, the input Object is returned
+   ignoring `removeUndefined`.
+
+   @param {*} propName
+   @param {function} f
+   @param {bool} removeUndefined
+   @returns {function}
+
+   @example
+   modifyObject('x',modifyObject('y',(y=1) => y+2))({x: {}})
+   // => {x: {y: 3}}
+
+ */
 const modifyObject = (propName, f, removeUndefined = false) => {
   if (typeof f !== 'function')
     console.error('modifier is not a function')
@@ -88,6 +135,8 @@ const clamp = (min=-Infinity, max=+Infinity) => v =>
 export {
   enumFromTo,
   ignore,
+
+  id,
   not,
 
   modifyObject,

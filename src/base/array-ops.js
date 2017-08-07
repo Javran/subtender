@@ -95,6 +95,10 @@ const projectorToComparator = prj => (x,y) =>
   // is always 2, and don't realy need to use a general version
   generalComparator(prj(x),prj(y))
 
+const sortBy = (cmp = generalComparator) => xs => [...xs].sort(cmp)
+
+const inplaceSortBy = (cmp = generalComparator) => xs => xs.sort(cmp)
+
 export {
   modifyArray,
   insertAt,
@@ -105,4 +109,7 @@ export {
   chainComparators,
   flipComparator,
   projectorToComparator,
+
+  sortBy,
+  inplaceSortBy,
 }
