@@ -99,6 +99,30 @@ const sortBy = (cmp = generalComparator) => xs => [...xs].sort(cmp)
 
 const inplaceSortBy = (cmp = generalComparator) => xs => xs.sort(cmp)
 
+const unionSorted = (cmp = generalComparator) => (xs,ys) => {
+  const zs = []
+  let xInd = 0
+  let yInd = 0
+  for (
+    /* NOOP */;
+    xInd < xs.length && yInd < ys.length;
+    /* NOOP */
+  ) {
+    const cmpResult = cmp(xs[xInd],ys[yInd])
+    if (cmpResult <= 0) {
+      zs.push(xs[xInd])
+      ++xInd
+    } else {
+      zs.push(ys[yInd])
+      ++yInd
+    }
+  }
+
+  return zs.concat(
+    xInd < xs.length ? xs.slice(xInd) : ys.slice(yInd)
+  )
+}
+
 export {
   modifyArray,
   insertAt,
@@ -112,4 +136,6 @@ export {
 
   sortBy,
   inplaceSortBy,
+
+  unionSorted,
 }
