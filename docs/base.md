@@ -1,9 +1,51 @@
 # Documentation for `subtender/base`
 
+A collection of basic utility functions.
+
+Unless explicitly specified, functions in this module does not mutate any existing value
+passing to them. So if you see terms like "modify", it means creating some new value
+with some portion of it changed.
+
+Also functions in this module is considered frequently called, for performance concerns,
+there are very few guarding mechanism to prevent you from misuse.
+
+- [`enumFromTo`](#enumfromto)
+- [`modifyObject`](#modifyobject)
+
+- [`modifyArray`](#modifyarray)
+- [`insertAt`](#insertat)
+- [`scan`](#scan)
+- [`generalComparator`](#generalcomparator)
+- [`chainComparators`](#chaincomparators)
+- [`flipComparator`](#flipcomparator)
+- [`projectorToComparator`](#projectortocomparator)
+
+## Terms
+
+- comparator: a function that accepts two arguments and can be used as
+  the second argument to `Array.prototype.sort`
+
+- projector: a function that projects an Array element into a value
+  for the purpose of sorting
+
+## `enumFromTo`
+
+`enumFromTo(frm,to,[succ = x => x+1],[cond = x => x <= to])` generates an Array.
+
+If `succ` and `cond` are omitted, the result will be `[frm,frm+1,frm+2,...,to]`.
+
+Otherwise:
+
+- `succ` is a function that takes last generated value and produces the next one
+- `cond` is a function that takes last generated value and determine
+  whether we should stop: any falsy value stops the generation.
+
+All generated values will be present in the resulting Array in the order
+of their generation.
+
 ## `modifyObject`
 
-
-`modifyObject(propName,f,[removeUndefined])(obj)` returns an Object which is the same as
+`modifyObject(propName,f,[removeUndefined = false])(obj)` returns an Object which is the same as
 `obj`, but with its `obj[propName]` replaced by applying `f` on the original value.
 
 The modifier `f` receives 3 arguments: `(val, propName, isValAssigned)`:
@@ -53,3 +95,46 @@ modifyObject(
 )({x: {z: 2}})
 // => {x: {z: 10, y: 3}}
 ```
+
+## `modifyArray`
+
+`modifyArray(index,f)(xs)` modifies Array `xs` at `index`.
+The original value at `xs[index]` is fed to `f` to produce the value
+after modification.
+
+- Out of bound modification results in returning the original Array
+- if value after modification is strictly equal (`===`) to the old one,
+  the original Array is returned.
+
+## `insertAt`
+
+`insertAt(ind,val)(xs)` inserts `val` at `ind` of `xs`.
+Original values after the insertion point are shifted.
+
+## `scan`
+
+Uncurried version of [scanl](https://hackage.haskell.org/package/base-4.10.0.0/docs/Data-List.html#v:scanl).
+
+## `generalComparator`
+
+`generalComparator` is supposed to be used as the second argument of `Array.prototype.sort`,
+which works on any values as long as using `===`, `>` and `<` produces
+the expected result.
+
+## `chainComparators`
+
+`chainComparators(cmp1, cmp2, ...)` takes comparators `cmp1`, `cmp2`, ...
+to produce a new comparator, which is the same as `cmp1` but when
+`cmp1` produces a tie, `cmp2` is attempted and so on.
+The resulting comparator will short-circuit if an early comparator in chain
+has already provided a non-zero result.
+
+## `flipComparator`
+
+`flipComparator` takes a comparator to produce the other comparator
+with its two arguments flipped.
+
+## `projectorToComparator`
+
+`projectorToComparator(prj)` takes a projector and produces a comparator
+that uses the projected value and `generalComparator` to do the comparison.
