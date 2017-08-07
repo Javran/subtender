@@ -74,4 +74,5 @@ export * from './base'
 export {
   mergeMapStateToProps,
   mergeMapDispatchToProps,
+  normalizeData,
 }
