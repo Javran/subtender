@@ -102,5 +102,22 @@ describe('mkSimpleReducer', () => {
         {ready: true, count: 1010}
       )
     })
+
+    spec('undefined newState prop', () => {
+      {
+        const finalState = reducer(rInitState, {type: readyActionTy})
+        assert.deepEqual(
+          finalState,
+          {ready: true, count: 0}
+        )
+      }
+      {
+        const finalState = reducer(rInitState, {type: readyActionTy, newState: undefined})
+        assert.deepEqual(
+          finalState,
+          {ready: true, count: 0}
+        )
+      }
+    })
   })
 })

@@ -17,7 +17,9 @@
    - a "Ready" action has the shape:
 
      - type: `readyActionType`
-     - newState: a state to replace the whole state
+     - (optional) newState: a state to replace the whole state
+
+     (note: when `newState` is missing or is `undefined`, the initial state will be used)
 
    this action will set "ready" property to "true" automatically.
    and only accepts "Modify" action (exactly as described above) when "ready" property
@@ -73,7 +75,11 @@ const mkSimpleReducer = (
       if (action.type === readyActionType) {
         const {newState} = action
         return {
-          ...newState,
+          ...(
+            typeof newState !== 'undefined' ?
+              newState :
+              getInitStateWithReady()
+          ),
           ready: true,
         }
       }
