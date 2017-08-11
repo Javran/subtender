@@ -31,6 +31,8 @@
    as string literals, since a string literal has a better chance of being interned
    than those generated at runtime.
 
+   see testcases in ../../test/tier1/redux/mk-simple-reducer.js for examples
+
  */
 const mkSimpleReducer = (
   /*
