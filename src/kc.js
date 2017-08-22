@@ -1,5 +1,3 @@
-import _ from 'lodash'
-
 const SType = {
   DE: 1, DD: 2, CL: 3, CLT: 4,
   CA: 5, CAV: 6, CVL: 7, FBB: 8,
@@ -61,32 +59,6 @@ const canEquipDLC = (stype, masterId) => {
   }
 }
 
-// traverse the structure, convert every Array whose elements have
-// 'api_id' property into an Object with `api_id` being the key
-const deepIndexify = val => {
-  if (val === null || typeof val !== 'object')
-    return val
-
-  if (Array.isArray(val)) {
-    const xs = val.map(deepIndexify)
-    if (xs.length === 0)
-      return xs
-
-    const x = xs[0]
-
-    if (x === null || typeof x !== 'object')
-      return xs
-
-    if ('api_id' in xs[0])
-      return _.keyBy(xs,'api_id')
-
-    return xs
-  } else {
-    return _.mapValues(val,deepIndexify)
-  }
-}
-
 export {
   canEquipDLC,
-  deepIndexify,
 }
