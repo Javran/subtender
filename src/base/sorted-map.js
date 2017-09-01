@@ -99,8 +99,6 @@ const locate = smContext => key => xs => {
   return find(0,xs.length-1)
 }
 
-// TODO: this one can be lifted into common
-
 /*
    modify(<smContext>)(<key>,<modifier>)(<SortedMap>) => SortedMap
 
