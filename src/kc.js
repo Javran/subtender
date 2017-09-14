@@ -57,6 +57,8 @@ const canEquipDLC = (stype, masterId) => {
         162, // Kamoi
       ])(masterId)
   }
+
+  return false
 }
 
 export {
