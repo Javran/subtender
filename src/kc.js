@@ -37,6 +37,7 @@ const canEquipDLC = (stype, masterId) => {
         199, // Ooshio K2
         468, // Asashio K2D
         490, // Arashio K2
+        489, // Michishio K2
         147, // Verniy
         469, // Kawakaze K2
 
