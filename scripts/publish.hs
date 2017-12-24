@@ -8,6 +8,7 @@ import Control.Monad.Managed
 import Filesystem.Path.CurrentOS
 import System.Exit
 import Turtle
+import Data.List.NonEmpty
 
 toText' :: FilePath -> Text
 toText' = either id id . toText
@@ -28,7 +29,7 @@ findProjectRoot = with (findProjectRootAux 5) pure
 main :: IO ()
 main = do
     (ExitSuccess, npmVerRaw) <- shellStrict "npm --version" ""
-    let (Just npmVer) = textToLine npmVerRaw
+    let (npmVer :| _) = textToLines npmVerRaw
     printf ("npm detected with version "%s%"\n") (lineToText npmVer)
     Just prjRoot <- findProjectRoot
     printf ("switching to project root: "%s%"\n") (toText' prjRoot)
