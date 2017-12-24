@@ -1,3 +1,5 @@
+import _ from 'lodash'
+
 const SType = {
   DE: 1, DD: 2, CL: 3, CLT: 4,
   CA: 5, CAV: 6, CVL: 7, FBB: 8,
@@ -63,6 +65,40 @@ const canEquipDLC = (stype, masterId) => {
   return false
 }
 
+/*
+   split a mapId into "area" and "num"
+   a mapId is a Number from api_id of map master data
+ */
+const splitMapId = mapId => ({
+  area: Math.floor(mapId/10),
+  num: mapId % 10,
+})
+
+/*
+   convert mapId to str, e.g. 12 -> "1-2", 401 -> "40-1"
+ */
+const mapIdToStr = mapId => {
+  const {area, num} = splitMapId(mapId)
+  return `${area}-${num}`
+}
+
+/*
+   convert mapStr, which are strings like "1-1", "40-1",
+   to mapId, returns null upon failure
+ */
+const mapStrToId = mapStr => {
+  const matchResult = /^(\d+)-(\d+)$/.exec(mapStr)
+  if (matchResult) {
+    const [_ignored, areaS, numS] = matchResult
+    return Number(areaS)*10 + Number(numS)
+  } else {
+    return null
+  }
+}
+
 export {
   canEquipDLC,
+  splitMapId,
+  mapIdToStr,
+  mapStrToId,
 }
