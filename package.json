@@ -7,7 +7,7 @@
   "scripts": {
     "transpile": "babel src --out-dir dist && cp package.json dist/package.json",
     "test": "mocha --compilers js:babel-core/register --recursive",
-    "lint": "eslint 'src/**' 'test/**'",
+    "lint": "eslint 'src/**' 'test/**' || true",
     "clear-dist": "rm -rf dist/",
     "check": "npm test && npm run lint",
     "check-and-publish": "stack ./scripts/publish.hs"

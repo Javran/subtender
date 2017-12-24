@@ -1,5 +1,5 @@
 #!/usr/bin/env stack
--- stack --resolver lts-8.2 --install-ghc runghc --package turtle
+-- stack --resolver lts-10.0 --install-ghc runghc --package turtle
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
 
