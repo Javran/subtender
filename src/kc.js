@@ -1,5 +1,3 @@
-import _ from 'lodash'
-
 const SType = {
   DE: 1, DD: 2, CL: 3, CLT: 4,
   CA: 5, CAV: 6, CVL: 7, FBB: 8,
@@ -29,6 +27,7 @@ const canEquipDLC = (stype, masterId) => {
         487, // Kinu K2
         488, // Yura K2
         547, // Tama K2
+        478, // Tatsuta K2
 
         // Destroyers
         418, // Satsuki K2
@@ -43,6 +42,7 @@ const canEquipDLC = (stype, masterId) => {
         489, // Michishio K2
         147, // Verniy
         469, // Kawakaze K2
+        498, // Murasame K2
 
         // Battleships
         // Nagato K2(541)
