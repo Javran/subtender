@@ -10,6 +10,10 @@ const SType = {
 const isOneOf = xs => x => xs.indexOf(x) !== -1
 
 /*
+   DEPRECATION: note that this function is deprecated in favor of canEquipDLCFuncSelector from poi,
+   as we have WhoCallsTheFleet data from poi, there is no point in maintaining a separated list
+   and having to update this constantly.
+
    check whether a ship is capable of equipping Daihatsu Landing Craft (DLC for short)
 
    extracted and refactored from:
