@@ -101,6 +101,7 @@ const mapStrToId = mapStr => {
 }
 
 export {
+  SType,
   canEquipDLC,
   splitMapId,
   mapIdToStr,
