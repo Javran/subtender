@@ -8,6 +8,7 @@
 import _ from 'lodash'
 import { createSelector } from 'reselect'
 import {
+  constSelector,
   wctfSelector,
 } from 'views/utils/selectors'
 
@@ -63,7 +64,61 @@ const canEquipDLCFuncSelector = createSelector(
   canEquip => _.memoize(canEquip(68 /* 大発動艇 */))
 )
 
+const shipRemodelInfoSelector = createSelector(
+  constSelector,
+  ({$ships}) => {
+    // master id of all non-abyssal ships
+    const mstIds = _.values($ships).map(x => x.api_id).filter(x => x <= 1500)
+    // set of masterIds that has some other ship pointing to it (through remodelling)
+    const afterMstIdSet = new Set()
+
+    mstIds.map(mstId => {
+      const $ship = $ships[mstId]
+      const afterMstId = Number($ship.api_aftershipid)
+      if (afterMstId !== 0)
+        afterMstIdSet.add(afterMstId)
+    })
+
+    // all those that has nothing pointing to them are originals
+    const originMstIds = mstIds.filter(mstId => !afterMstIdSet.has(mstId))
+
+    /*
+       remodelChains[originMstId] = <RemodelChain>
+
+       - originMstId: master id of the original ship
+       - RemodelChain: an Array of master ids, sorted by remodeling order.
+     */
+    const remodelChains = _.fromPairs(originMstIds.map(originMstId => {
+      // chase remodel chain until we either reach an end or hit a loop
+      const searchRemodels = (mstId, results=[]) => {
+        if (results.includes(mstId))
+          return results
+
+        const newResults = [...results, mstId]
+        const $ship = $ships[mstId]
+        const afterMstId = Number(_.get($ship,'api_aftershipid',0))
+        if (afterMstId !== 0) {
+          return searchRemodels(afterMstId,newResults)
+        } else {
+          return newResults
+        }
+      }
+      return [originMstId, searchRemodels(originMstId)]
+    }))
+
+    // originMstIdOf[<master id>] = <original master id>
+    const originMstIdOf = {}
+    Object.entries(remodelChains).map(([originMstId, remodelChain]) => {
+      remodelChain.map(mstId => {
+        originMstIdOf[mstId] = originMstId
+      })
+    })
+    return {remodelChains, originMstIdOf}
+  }
+)
+
 export {
   canEquipFuncSelector,
   canEquipDLCFuncSelector,
+  shipRemodelInfoSelector,
 }
