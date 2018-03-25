@@ -1,6 +1,6 @@
 {
   "name": "subtender",
-  "version": "0.13.1",
+  "version": "0.14.0",
   "description": "Javran's utility functions",
   "main": "index.js",
   "private": true,
