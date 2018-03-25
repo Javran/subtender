@@ -65,11 +65,13 @@ const scan = (xs, acc, zero) => {
    suggests equality.
 
  */
+/* eslint-disable indent */
 const generalComparator = (x,y) =>
   (x === y) ? 0 :
   (x < y) ? -1 :
   (x > y) ? 1 :
   0
+/* eslint-enable indent */
 
 // composing multiple comparators into one by
 // trying comparators **from left to right**, and return first non-zero value.

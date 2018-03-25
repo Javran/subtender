@@ -26,12 +26,15 @@ describe('chainComparators & projectorToComparator', () =>
       id: x,
     }))
 
+    /* eslint-disable indent */
     const expected = [...xs].sort(
       (x,y) =>
         (x.t1 - y.t1) !== 0 ? x.t1 - y.t1 :
         (x.t2 - y.t2) !== 0 ? x.t2 - y.t2 :
         (x.t3 - y.t3) !== 0 ? x.t3 - y.t3 :
-        x.id - y.id)
+        x.id - y.id
+    )
+    /* eslint-enable indent */
     const actual = [...xs].sort(
       chainComparators(
         ...'t1 t2 t3 id'.split(' ').map(w =>

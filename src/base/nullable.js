@@ -11,10 +11,12 @@ class Nullable {
      when it's `true`, value `undefined` is also considered a null value so `none` is called.
 
    */
+  /* eslint-disable indent */
   static destruct = ({one,none}, undefIsNull = false) => x =>
     x === null ? none() :
     (undefIsNull && typeof x === 'undefined') ? none() :
     one(x)
+  /* eslint-enable indent */
 }
 
 export { Nullable }

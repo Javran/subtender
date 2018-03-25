@@ -68,7 +68,9 @@ module.exports = {
     'react/jsx-boolean-value': 'off',
     'no-mixed-operators': 'off',
     'consistent-return': 'off',
-    'no-plusplus': 'off'
+    'no-plusplus': 'off',
+    'object-curly-newline': 'off',
+    'function-paren-newline': 'off',
   },
   'settings': {
     'import/resolver': {
