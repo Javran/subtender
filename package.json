@@ -26,10 +26,11 @@
   },
   "homepage": "https://github.com/Javran/subtender#readme",
   "devDependencies": {
+    "@babel/cli": "^7.0.0-beta.42",
     "@babel/core": "^7.0.0-beta.40",
     "@babel/preset-env": "^7.0.0-beta.40",
-    "@babel/register": "^7.0.0-beta.40",
     "@babel/preset-stage-0": "^7.0.0-beta.40",
+    "@babel/register": "^7.0.0-beta.40",
     "babel-eslint": "^8.2.2",
     "babel-plugin-add-module-exports": "^0.2.1",
     "babel-plugin-transform-react-jsx": "^6.24.1",

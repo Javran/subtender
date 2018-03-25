@@ -1,4 +1,7 @@
 {
-  presets: ["es2015", "stage-0"],
-  plugins: ["add-module-exports", "transform-react-jsx"],
+  presets: ["@babel/env", "@babel/preset-stage-0"],
+  plugins: [
+    "add-module-exports",
+    "transform-react-jsx",
+  ],
 }
