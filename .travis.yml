@@ -1,6 +1,7 @@
 language: node_js
 node_js: node
 before_install:
+  - npm config set package-lock false
   - npm install lodash
 script: npm run check
 cache:
