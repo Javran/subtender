@@ -70,7 +70,7 @@ const shipRemodelInfoSelector = createSelector(
     // master id of all non-abyssal ships
     const mstIds = _.values($ships).map(x => x.api_id).filter(x => x <= 1500)
     // set of masterIds that has some other ship pointing to it (through remodelling)
-    const afterMstIdSet = new Set()
+    let afterMstIdSet = new Set()
 
     mstIds.map(mstId => {
       const $ship = $ships[mstId]
