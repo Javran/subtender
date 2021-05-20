@@ -82,6 +82,22 @@ const shipRemodelInfoSelector = createSelector(
     // all those that has nothing pointing to them are originals
     const originMstIds = mstIds.filter(mstId => !afterMstIdSet.has(mstId))
 
+    // chase remodel chain until we either reach an end or hit a loop
+    const searchRemodels = (mstId, results=[]) => {
+      afterMstIdSet.delete(mstId)
+      if (results.includes(mstId))
+        return results
+
+      const newResults = [...results, mstId]
+      const $ship = $ships[mstId]
+      const afterMstId = Number(_.get($ship,'api_aftershipid',0))
+      if (afterMstId !== 0) {
+        return searchRemodels(afterMstId,newResults)
+      } else {
+        return newResults
+      }
+    }
+
     /*
        remodelChains[originMstId] = <RemodelChain>
 
@@ -89,22 +105,16 @@ const shipRemodelInfoSelector = createSelector(
        - RemodelChain: an Array of master ids, sorted by remodeling order.
      */
     const remodelChains = _.fromPairs(originMstIds.map(originMstId => {
-      // chase remodel chain until we either reach an end or hit a loop
-      const searchRemodels = (mstId, results=[]) => {
-        if (results.includes(mstId))
-          return results
-
-        const newResults = [...results, mstId]
-        const $ship = $ships[mstId]
-        const afterMstId = Number(_.get($ship,'api_aftershipid',0))
-        if (afterMstId !== 0) {
-          return searchRemodels(afterMstId,newResults)
-        } else {
-          return newResults
-        }
-      }
       return [originMstId, searchRemodels(originMstId)]
     }))
+
+    // Some remodal chain has no originMstId
+    afterMstIdSet = new Set([...afterMstIdSet].sort((a, b) => a - b))
+    while (afterMstIdSet.size > 0) {
+      const originMstId = afterMstIdSet.values().next().value
+      afterMstIdSet.delete(originMstId)
+      remodelChains[originMstId] = searchRemodels(originMstId)
+    }
 
     // originMstIdOf[<master id>] = <original master id>
     const originMstIdOf = {}
