@@ -109,6 +109,7 @@ const shipRemodelInfoSelector = createSelector(
     }))
 
     // Some remodal chain has no originMstId
+    afterMstIdSet = new Set([...afterMstIdSet].sort((a, b) => a - b))
     while (afterMstIdSet.size > 0) {
       const originMstId = afterMstIdSet.values().next().value
       afterMstIdSet.delete(originMstId)
