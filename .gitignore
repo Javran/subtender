@@ -23,3 +23,5 @@ yarn-error.log*
 # distribution
 /dist/
 /private/
+
+package-lock.json
