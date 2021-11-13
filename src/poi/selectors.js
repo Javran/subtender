@@ -7,10 +7,18 @@
 
 import _ from 'lodash'
 import { createSelector } from 'reselect'
+import UnionFind from 'union-find'
+
 import {
   constSelector,
   wctfSelector,
 } from 'views/utils/selectors'
+
+import {
+  chainComparators,
+  inplaceSortBy,
+} from '../base'
+
 
 /*
    returns a function:
@@ -64,64 +72,158 @@ const canEquipDLCFuncSelector = createSelector(
   canEquip => _.memoize(canEquip(68 /* 大発動艇 */))
 )
 
+// remodelComparator(a,b) compares a and b and tries to put early forms in front.
+// here both a and b are values of $ships.
+const remodelComparator = chainComparators(
+  // 1: compare sort_id
+  (a, b) => (a.api_sort_id % 10) - (b.api_sort_id % 10),
+  // 2: compare sortno
+  (a, b) => a.api_sortno - b.api_sortno,
+  // 3: compare ship id
+  (a, b) => a.api_id - b.api_id,
+)
+
+/*
+  Computes two objects: {originMstIdOf, remodelChains}
+
+  remodelChains[originMstId] = <RemodelChain>
+
+  - originMstId: master id (as Number) of the original ship
+  - RemodelChain: an Array of master ids (as Numbers), sorted by remodeling order.
+
+  Since 0.15.0 the algorithm is designed to handle branched remodels,
+  if that ever happens, RemodelChain will sort master ids by
+  number of remodel times to get to that particular master id.
+
+  originMstIdOf[mstId] = <original master id>
+
+  Prior to 0.15.0 values of originMstIdOf may be strings.
+  But since 0.15.0 this value is always Number.
+
+ */
 const shipRemodelInfoSelector = createSelector(
   constSelector,
   ({$ships}) => {
-    // master id of all non-abyssal ships
+    // master ids of all non-abyssal ships
     const mstIds = _.values($ships).map(x => x.api_id).filter(x => x <= 1500)
-    // set of masterIds that has some other ship pointing to it (through remodelling)
-    let afterMstIdSet = new Set()
 
+    // lookup table from mstId to its index in mstIds Array.
+    const mstIdRevTable = (() => {
+      const m = new Map()
+      _.forEach(mstIds, (x, i) => {
+        m.set(x, i)
+      })
+      return m
+    })()
+
+    // set of masterIds that has some other ship pointing to it (through remodelling)
+    const afterMstIdSet = new Set()
+
+    // key: mstId, value: Set of mstId
+    const remodelGraph = new Map()
+
+    const uf = new UnionFind(mstIds.length)
+
+    // traverse all remodels
     mstIds.map(mstId => {
       const $ship = $ships[mstId]
       const afterMstId = Number($ship.api_aftershipid)
-      if (afterMstId !== 0)
+      if (afterMstId !== 0) {
         afterMstIdSet.add(afterMstId)
+
+        if (remodelGraph.has(mstId)) {
+          remodelGraph.get(mstId).add(afterMstId)
+        } else {
+          const s = new Set()
+          s.add(afterMstId)
+          remodelGraph.set(mstId, s)
+        }
+        uf.link(mstIdRevTable.get(mstId), mstIdRevTable.get(afterMstId))
+      }
     })
 
-    // all those that has nothing pointing to them are originals
-    const originMstIds = mstIds.filter(mstId => !afterMstIdSet.has(mstId))
-
-    // chase remodel chain until we either reach an end or hit a loop
-    const searchRemodels = (mstId, results=[]) => {
-      afterMstIdSet.delete(mstId)
-      if (results.includes(mstId))
-        return results
-
-      const newResults = [...results, mstId]
-      const $ship = $ships[mstId]
-      const afterMstId = Number(_.get($ship,'api_aftershipid',0))
-      if (afterMstId !== 0) {
-        return searchRemodels(afterMstId,newResults)
-      } else {
-        return newResults
-      }
-    }
+    const mstIdRemodelComparator = (mstIdA, mstIdB) =>
+      remodelComparator($ships[mstIdA], $ships[mstIdB])
+    const inplaceSortMstIdsByRemodel = inplaceSortBy(mstIdRemodelComparator)
 
     /*
-       remodelChains[originMstId] = <RemodelChain>
-
-       - originMstId: master id of the original ship
-       - RemodelChain: an Array of master ids, sorted by remodeling order.
+      An Array whose elements are Arrays of mstIds.
+      mstIds that are in the same Array are considered belonging to the same remodel cluster.
+      Note that this step is just to group mstIds, we'll further process each group individually.
      */
-    const remodelChains = _.fromPairs(originMstIds.map(originMstId => {
-      return [originMstId, searchRemodels(originMstId)]
-    }))
+    const remodelClusters = (() => {
+      const clusters = new Map()
+      _.forEach(mstIds, (mstId, i) => {
+        const k = uf.find(i)
+        if (clusters.has(k)) {
+          clusters.get(k).push(mstId)
+        } else {
+          clusters.set(k, [mstId])
+        }
+      })
+      // throw out keys - those are only used to label different clusters.
+      return [...clusters.values()]
+    })()
 
-    // Some remodal chain has no originMstId
-    afterMstIdSet = new Set([...afterMstIdSet].sort((a, b) => a - b))
-    while (afterMstIdSet.size > 0) {
-      const originMstId = afterMstIdSet.values().next().value
-      afterMstIdSet.delete(originMstId)
-      remodelChains[originMstId] = searchRemodels(originMstId)
-    }
 
-    // originMstIdOf[<master id>] = <original master id>
+    const remodelChains = {}
     const originMstIdOf = {}
-    Object.entries(remodelChains).map(([originMstId, remodelChain]) => {
-      remodelChain.map(mstId => {
+    _.forEach(remodelClusters, mstIdCluster => {
+      /*
+        In most cases this correctly finds the original ship.
+
+        Note that we are assuming there is at most one ship in each cluster
+        that has no in-degree, which should be a safe one.
+       */
+      let originMstId = mstIdCluster.find(mstId => !afterMstIdSet.has(mstId))
+      if (!originMstId) {
+        // mstIdCluster must be non-empty to have this element in the first place.
+        [originMstId] = mstIdCluster
+        // sorting is unnecessary as we just want to find the minimum
+        for (let i = 1; i < mstIdCluster.length; ++i) {
+          const curMstId = mstIdCluster[i]
+          if (mstIdRemodelComparator(originMstId, curMstId) > 0) {
+            originMstId = curMstId
+          }
+        }
+      }
+
+      mstIdCluster.forEach(mstId => {
         originMstIdOf[mstId] = originMstId
       })
+
+      const visited = new Set()
+      const depClusters = []
+      const searchRemodels = (mstId, depth) => {
+        if (visited.has(mstId)) {
+          return
+        }
+        visited.add(mstId)
+        if (typeof depClusters[depth] === 'undefined') {
+          depClusters[depth] = [mstId]
+        } else {
+          depClusters[depth].push(mstId)
+        }
+
+        if (remodelGraph.has(mstId)) {
+          remodelGraph.get(mstId).forEach(afterMstId =>
+            searchRemodels(afterMstId, depth+1)
+          )
+        }
+      }
+      searchRemodels(originMstId, 0)
+      // if there is ever more than one element in one depth
+      // this sorting step should make a reasonable decision.
+      depClusters.forEach(xs => inplaceSortMstIdsByRemodel(xs))
+      const remodelChain = _.compact(_.flatten(depClusters))
+      remodelChains[originMstId] = remodelChain
+
+      // last round of sanity check, if anything in the cluster is unreachable,
+      // this part should signal it.
+      const unreachableMstIds = mstIdCluster.filter(mstId => !visited.has(mstId))
+      if (unreachableMstIds.length > 0) {
+        console.warn(`Unrechable from originMstId=${originMstId}: ${unreachableMstIds}, those will be ignored from remodelChains data.`)
+      }
     })
     return {remodelChains, originMstIdOf}
   }

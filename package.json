@@ -45,5 +45,7 @@
   "peerDependencies": {
     "lodash": "^4"
   },
-  "dependencies": {}
+  "dependencies": {
+    "union-find": "^1.0.2"
+  }
 }
