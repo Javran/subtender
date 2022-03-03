@@ -52,18 +52,6 @@ const mkDebug = (tagName='subtender',startEnabled=false) => {
     dbgHandler.disable()
   }
 
-  dbgHandler.warn =
-    console.warn.bind(
-      console,
-      `%c${tagName}`,
-      'background: linear-gradient(30deg, cyan, white 3ex)')
-
-  dbgHandler.error =
-    console.error.bind(
-      console,
-      `%c${tagName}`,
-      'background: linear-gradient(30deg, cyan, white 3ex)')
-
   return dbgHandler
 }
 
