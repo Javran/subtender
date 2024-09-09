@@ -1,11 +1,10 @@
 #!/usr/bin/env stack
--- stack --resolver lts-16.31 --install-ghc runghc --package turtle
+-- stack --resolver lts-21.25 --install-ghc runghc --package turtle
 {-# LANGUAGE OverloadedStrings #-}
 module Main where
 
 import Prelude hiding (FilePath)
 import Control.Monad.Managed
-import Filesystem.Path.CurrentOS
 import System.Exit
 import Turtle
 import Data.List.NonEmpty
