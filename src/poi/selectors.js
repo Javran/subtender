@@ -7,7 +7,6 @@
 
 import _ from 'lodash'
 import { createSelector } from 'reselect'
-import UnionFind from 'union-find'
 
 import {
   constSelector,
@@ -104,17 +103,10 @@ const remodelComparator = chainComparators(
 const shipRemodelInfoSelector = createSelector(
   constSelector,
   ({$ships}) => {
+    const mstObjs = _.values($ships).filter(x => x.api_id <= 1500)
     // master ids of all non-abyssal ships
-    const mstIds = _.values($ships).map(x => x.api_id).filter(x => x <= 1500)
-
-    // lookup table from mstId to its index in mstIds Array.
-    const mstIdRevTable = (() => {
-      const m = new Map()
-      _.forEach(mstIds, (x, i) => {
-        m.set(x, i)
-      })
-      return m
-    })()
+    const mstIds = mstObjs.map(x => x.api_id)
+    const groupped = _.groupBy(mstObjs, x => x.api_yomi)
 
     // set of masterIds that has some other ship pointing to it (through remodelling)
     const afterMstIdSet = new Set()
@@ -122,15 +114,12 @@ const shipRemodelInfoSelector = createSelector(
     // key: mstId, value: Set of mstId
     const remodelGraph = new Map()
 
-    const uf = new UnionFind(mstIds.length)
-
     // traverse all remodels
     mstIds.map(mstId => {
       const $ship = $ships[mstId]
       const afterMstId = Number($ship.api_aftershipid)
       if (afterMstId !== 0) {
         afterMstIdSet.add(afterMstId)
-
         if (remodelGraph.has(mstId)) {
           remodelGraph.get(mstId).add(afterMstId)
         } else {
@@ -138,7 +127,6 @@ const shipRemodelInfoSelector = createSelector(
           s.add(afterMstId)
           remodelGraph.set(mstId, s)
         }
-        uf.link(mstIdRevTable.get(mstId), mstIdRevTable.get(afterMstId))
       }
     })
 
@@ -151,20 +139,10 @@ const shipRemodelInfoSelector = createSelector(
       mstIds that are in the same Array are considered belonging to the same remodel cluster.
       Note that this step is just to group mstIds, we'll further process each group individually.
      */
-    const remodelClusters = (() => {
-      const clusters = new Map()
-      _.forEach(mstIds, (mstId, i) => {
-        const k = uf.find(i)
-        if (clusters.has(k)) {
-          clusters.get(k).push(mstId)
-        } else {
-          clusters.set(k, [mstId])
-        }
-      })
-      // throw out keys - those are only used to label different clusters.
-      return [...clusters.values()]
-    })()
-
+    const remodelClusters = []
+    _.toPairs(groupped).forEach(([_yomi, vals]) => {
+      remodelClusters.push(vals.map(x => x.api_id))
+    })
 
     const remodelChains = {}
     const originMstIdOf = {}
@@ -222,7 +200,7 @@ const shipRemodelInfoSelector = createSelector(
       // this part should signal it.
       const unreachableMstIds = mstIdCluster.filter(mstId => !visited.has(mstId))
       if (unreachableMstIds.length > 0) {
-        console.warn(`Unrechable from originMstId=${originMstId}: ${unreachableMstIds}, those will be ignored from remodelChains data.`)
+        console.warn(`Unreachable from originMstId=${originMstId}: ${unreachableMstIds}, those will be ignored from remodelChains data.`)
       }
     })
     return {remodelChains, originMstIdOf}
