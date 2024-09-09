@@ -23,6 +23,7 @@ const normalizeData = val => {
 export * from '../base'
 export * from './redux'
 export * from './react-redux'
+export * from './remodel'
 
 export {
   normalizeData,
