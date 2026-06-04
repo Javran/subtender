@@ -2,6 +2,7 @@
    eslint import/no-unresolved:
    [ 'error', { ignore: [
      'views/utils/selectors',
+     'views/utils/equipability',
    ] }]
  */
 
@@ -60,15 +61,40 @@ const canEquipFuncSelector = createSelector(
   }
 )
 
+// try to use the new api_start2-based equipability helpers if available
+const canEquipDaihatsuNew = (() => {
+  try {
+    // eslint-disable-next-line global-require
+    const equip = require('views/utils/equipability').canEquipDaihatsu
+    if (typeof equip === 'function') {
+      return equip
+    }
+  } catch (e) {
+    // module not available in this poi version
+  }
+  return null
+})()
+
 /*
-   returns canEquip function specialized on telling
-   whether a ship is capable of equipping Daihatsu Landing Craft,
-   so for the resulting function you need only give shipMstId.
+   returns a function:
+   canEquipDLC(shipMstId: int): bool
+
+   tells whether a ship is capable of equipping Daihatsu Landing Craft.
+
+   Prefers the api_start2-based canEquipDaihatsu from views/utils/equipability
+   (available since poi PR #2654), falling back to wctf-based data.
  */
-const canEquipDLCFuncSelector = createSelector(
-  canEquipFuncSelector,
-  canEquip => _.memoize(canEquip(68 /* 大発動艇 */))
-)
+const canEquipDLCFuncSelector = canEquipDaihatsuNew
+  ? createSelector(
+    constSelector,
+    constState => _.memoize(
+      shipMstId => canEquipDaihatsuNew(shipMstId, constState)
+    )
+  )
+  : createSelector(
+    canEquipFuncSelector,
+    canEquip => _.memoize(canEquip(68 /* 大発動艇 */))
+  )
 
 
 /*
